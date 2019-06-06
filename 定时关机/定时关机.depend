@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1552387840 source:d:\codeblocks\codes\定时关机\main.cpp
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1551450070 source:d:\codeblocks\codes\定时关机\icon.rc
+
