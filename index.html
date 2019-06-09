@@ -1,0 +1,123 @@
+<span style="color:#33cc00;">var win = this.getWindow();
+var me  = this;
+win.resetGame();
+//变量初始化
+win.gameOver = initData;
+win.initVar = function(){
+    win.score = 0;
+    win.countDown = 30;
+    win.arrayGopher = Array();//地鼠
+    win.find("云/计分板/倒计时").setValue("00:" + win.countDown);
+    win.hammer = win.find("锤子");
+    win.hammer.setPivot(1,0.5);
+    var ground = win.find("底");
+    var fences = win.find("栅栏");
+    fences.setPosition(fences.x,ground.y - fences.h);
+};
+//所有的地鼠初始化
+win.gopherInit = function(number){
+    if(number <= 0){
+        return;
+    }
+    for(var i = 0; i < number; i++){//
+        win.arrayGopher[i] = win.find("切图-"+i);
+        win.arrayGopher[i].randomFlag = false;//出洞标志
+        win.arrayGopher[i].hitFlag = false;//击中标志
+        var element = win.arrayGopher[i].children[0];
+        element.setPosition(element.x,element.y+element.h + 50);
+    }
+};
+//随机地鼠出洞
+var resetState = function(){
+    if(win.gameOver || !this.children) {
+        return;
+    }
+    var self = this;
+    var element = self.children[0];
+    //播出洞动画
+    self.hitFlag = false;//清击中标志
+    element.play( "chu", 1, function(){
+        var animateOut = {duration:250,yEnd:element.y-element.h - 50};
+        element.animate(animateOut,function(){//出洞
+            me.playSoundEffect("sound 63.wav", function onDone() {console.log("play finished");});
+            setTimeout(function() {
+                //判断是否被击中
+                if(self.hitFlag === false) {
+                    self.hitFlag = true;//进洞禁止击打
+                    //播进洞动画
+                    var animateEnter = {duration:150,yEnd:element.y+element.h + 50};
+                    element.animate(animateEnter);//进洞
+                } 
+                setTimeout(function() {
+                    if(self){
+                        //出多少地鼠可以在这里做修改
+                        /*  //出一只老鼠
+                            index = Math.floor(Math.random()*win.arrayGopher.length);
+                            win.arrayGopher[index].resetState();
+                        */
+                        /* 出多只地鼠*/
+                        self.resetState();
+                    }
+                }, 1600+Math.random()*1200);
+            }, 1500);
+        });
+    });
+};
+//击打地鼠
+var handleClick = function(point){
+    
+    var element = this.children[0];
+    
+    win.hammer.setPosition(this.x,this.y);
+ 
+    var hammerAnimateHit = { duration:80, rotationStart: 45 / 180 * Math.PI, rotationEnd:2 / 180 * Math.PI};
+    var hammerAnimate = { duration:80, rotationStart: 2 / 180 * Math.PI, rotationEnd:45 / 180 * Math.PI};
+    win.hammer.animate(hammerAnimateHit,function(){ win.hammer.animate(hammerAnimate) });
+    me.playSoundEffect("HitVoles.mp3", function onDone() {console.log("play finished");});
+    if(element.animating || win.gameOver) {
+        return;
+    }
+         
+    if(this.hitFlag === false){
+ 
+        this.hitFlag  = true;//击中禁止在击打标志
+        win.score++;
+        win.find("云/计分板/得分").setValue(win.score);
+        //先播击中动画，在播进洞动画
+        element.play("hit", 1,function(){
+            var animateEnter = { duration:250, yEnd:element.y+element.h + 50};
+            element.animate(animateEnter);
+        });
+    }
+};
+win.initVar();
+win.gopherInit(16);
+ 
+for(var i = 0; i < win.arrayGopher.length; i++){
+    win.arrayGopher[i].handleClick = handleClick;
+    win.arrayGopher[i].resetState  = resetState;
+}
+var number = 0;
+win.gopherStart = function(){
+    if(win.gameOver){
+        return;
+    }
+    if(number < win.arrayGopher.length){
+        var index = 0;
+        do{
+            index = Math.floor(Math.random()*win.arrayGopher.length);
+        }while(win.arrayGopher[index].randomFlag);
+        win.arrayGopher[index].randomFlag = true;
+        win.arrayGopher[index].resetState();
+        setTimeout(function(){
+            win.gopherStart();
+        }, 1200+Math.random()*1000);
+        number++;
+    }
+}; 
+win.gopherStart();</span>
+--------------------- 
+作者：shenhaijy123 
+来源：CSDN 
+原文：https://blog.csdn.net/shenhaijy/article/details/46815735 
+版权声明：本文为博主原创文章，转载请附上博文链接！
