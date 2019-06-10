@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			body{
+				background: #000;
+			}
+			.container{
+				width: 150px;
+				height: 150px;
+				margin: 200px auto;
+				perspective: 800px;
+			}
+			.content{
+				transform-style: preserve-3d;
+				width: 150px;
+				margin-left: -75px;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transition: all .5s; 
+			}
+			.content img{
+				width: 150px;
+				height: 200px;
+				position: absolute;
+				transition: all .5s;
+				box-shadow: 0 0 5px #fff; 
+			}
+			.content img.active{
+				display: none;
+				box-shadow: 0 0 15px blueviolet;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<ul class="content" id="content">
+				<img src="img/1.jpg"/>
+				<img src="img/2.jpg"/>
+				<img src="img/3.jpg"/>
+				<img src="img/4.jpg"/>
+				<img src="img/5.jpg"/>
+				<img src="img/6.jpg"/>
+				<img src="img/7.jpg"/>
+				<img src="img/8.jpg"/>
+				<img src="img/3.jpg"/>
+			</ul>
+		</div>
+		<script type="text/javascript">
+			onload = function(){
+				
+				var ocontent = document.getElementById("content");
+				console.log(typeof(ocontent));
+				var aimg = ocontent.children;
+				//给每一个img设置一个rotateY值,横向翻滚
+				for(var i=0;i<aimg.length;i++){
+					aimg[i].style.transform = "rotateY("+i*40+"deg) translateZ(226px) rotateY(0deg)";
+				}
+				var index = 0; //无限递增
+				document.onclick = function(){
+					index++;
+					changeimg(index);
+				}
+				changeimg(index);
+				function changeimg(index){
+					ocontent.style.transform="rotateY("+ -index*40+"deg)";
+					//判断前一张图片和后一张图片
+					var now = index%9;  //当前显示图片
+					var beforeimg = now-1; //前一张图片
+					var afterimg = now+1//后一张图片
+//					console.log(now);
+//					console.log(beforeimg);
+//					console.log(afterimg);
+					if(now==8){
+						afterimg=0;
+					}
+					if(now==0){
+						beforeimg=8;
+					}
+					//让前后图片平行于当前图片
+					aimg[afterimg].style.transform = "rotateY("+afterimg*40+"deg) translateZ(326px) rotateY(-45deg)";
+					aimg[beforeimg].style.transform = "rotateY("+beforeimg*40+"deg) translateZ(326px) rotateY(45deg)";
+					aimg[now].style.transform = "rotateY("+now*40+"deg) translateZ(326px) rotateY(0)";
+					//
+					console.log(aimg[now]);
+					for(var i=0;i<aimg.length;i++){
+//						aimg[i].removeClass("active"); //JQuery封装好的;
+						aimg[i].className="";
+						aimg[i].style.display="block";
+					}
+//					aimg[now].addClass("active");
+					aimg[now].className="active";
+//					aimg[i].style.display="block";
+					
+				}
+			}
+		</script>
+	</body>
+</html>
